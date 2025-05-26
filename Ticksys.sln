@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "src\AppHost\AppHost.csproj", "{C674CF3B-19DF-4037-8AE9-52C1FA70E3C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "src\ServiceDefaults\ServiceDefaults.csproj", "{C09EA747-93DA-48D0-8417-957C63970585}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ticksys.Api", "src\Ticksys.Api\Ticksys.Api.csproj", "{032B06B8-6B1C-43FA-83F9-572FB3478F0C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C674CF3B-19DF-4037-8AE9-52C1FA70E3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C674CF3B-19DF-4037-8AE9-52C1FA70E3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C674CF3B-19DF-4037-8AE9-52C1FA70E3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C674CF3B-19DF-4037-8AE9-52C1FA70E3C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C09EA747-93DA-48D0-8417-957C63970585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C09EA747-93DA-48D0-8417-957C63970585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C09EA747-93DA-48D0-8417-957C63970585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C09EA747-93DA-48D0-8417-957C63970585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{032B06B8-6B1C-43FA-83F9-572FB3478F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032B06B8-6B1C-43FA-83F9-572FB3478F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032B06B8-6B1C-43FA-83F9-572FB3478F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032B06B8-6B1C-43FA-83F9-572FB3478F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
