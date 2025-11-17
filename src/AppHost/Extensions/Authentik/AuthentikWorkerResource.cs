@@ -1,7 +1,6 @@
 ﻿namespace AppHost.Extensions.Authentik;
 
-public class AuthentikWorkerResource(string name, AuthentikServerResource parent, ParameterResource password) : 
-    AuthentikResource(name, null, password), IResourceWithParent<AuthentikServerResource>
+public class AuthentikWorkerResource(string name, AuthentikResource parent, ParameterResource password) : 
+    AuthentikResourceBase(name, parent, null, password)
 {
-    public AuthentikServerResource Parent { get; } = parent;
 }

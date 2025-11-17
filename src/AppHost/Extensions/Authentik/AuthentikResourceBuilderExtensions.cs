@@ -7,7 +7,7 @@ public static class AuthentikResourceBuilderExtensions
 
     private static IResourceBuilder<T> WithPostgresData<T>(
         this IResourceBuilder<T> builder,
-        IResourceBuilder<PostgresDatabaseResource> database) where T : AuthentikResource
+        IResourceBuilder<PostgresDatabaseResource> database) where T : AuthentikResourceBase
     {
         var pgServer = database.Resource.Parent;
         var ep = pgServer.GetEndpoint("tcp");
@@ -31,7 +31,7 @@ public static class AuthentikResourceBuilderExtensions
         this IResourceBuilder<T> builder,
         IResourceBuilder<PostgresDatabaseResource> database,
         IResourceBuilder<ParameterResource>? username = null,
-        IResourceBuilder<ParameterResource>? password = null) where T : AuthentikResource
+        IResourceBuilder<ParameterResource>? password = null) where T : AuthentikResourceBase
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(database);
@@ -44,13 +44,15 @@ public static class AuthentikResourceBuilderExtensions
     }
 
     private static IResourceBuilder<AuthentikWorkerResource> AddAuthentikWorker(
-        this IResourceBuilder<AuthentikServerResource> builder,
-        string name, IResourceBuilder<PostgresDatabaseResource> database)
+        this IDistributedApplicationBuilder builder,
+        string name, 
+        AuthentikResource parent,
+        IResourceBuilder<PostgresDatabaseResource> database)
     {
         
-        AuthentikWorkerResource workerResource = new($"{name}-worker", builder.Resource, builder.Resource.AdminPasswordParameter);
+        AuthentikWorkerResource workerResource = new($"{name}-worker", parent, parent.Server.AdminPasswordParameter);
 
-        var worker = builder.ApplicationBuilder
+        var worker = builder
             .AddResource(workerResource)
             .WithImage("goauthentik/server")
             .WithImageRegistry("ghcr.io")
@@ -60,16 +62,17 @@ public static class AuthentikResourceBuilderExtensions
         return worker;
     }
     
-    public static IResourceBuilder<AuthentikServerResource> AddAuthentik(
+    private static IResourceBuilder<AuthentikServerResource> AddAuthentikServer(
         this IDistributedApplicationBuilder builder,
         string name,
+        AuthentikResource parent,
         IResourceBuilder<PostgresDatabaseResource> database,
         int? port = null,
         IResourceBuilder<ParameterResource>? adminUsername = null,
         IResourceBuilder<ParameterResource>? adminPassword = null)
     {
         var secret = adminPassword?.Resource ?? ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(builder, "secret-key", false);
-        AuthentikServerResource serverResource = new(name, adminUsername?.Resource, secret);
+        AuthentikServerResource serverResource = new($"{name}-server", parent, adminUsername?.Resource, secret);
 
 
         var authentik = builder
@@ -81,7 +84,31 @@ public static class AuthentikResourceBuilderExtensions
             .WithHttpEndpoint(port: port, targetPort: DefaultContainerPort)
             .WithHttpHealthCheck(path: "/-/health/live/")
             .WithEnvironment("AUTHENTIK_SECRET_KEY", serverResource.AdminPasswordParameter).WithPostgres(database);
-        authentik.AddAuthentikWorker(name, database);
+        return authentik;
+    }
+    
+    
+    public static IResourceBuilder<AuthentikResource> AddAuthentik(
+        this IDistributedApplicationBuilder builder,
+        string name,
+        IResourceBuilder<PostgresDatabaseResource> database,
+        int? port = null,
+        IResourceBuilder<ParameterResource>? adminUsername = null,
+        IResourceBuilder<ParameterResource>? adminPassword = null)
+    {
+        var resource = new AuthentikResource(name);
+        var server = builder.AddAuthentikServer(name, resource, database, port, adminUsername, adminPassword);
+        resource.Server = server.Resource;
+        resource.Worker = builder.AddAuthentikWorker(name, resource, database).Resource;
+        var authentik = builder
+            .AddResource(resource)
+            .WithInitialState(new()
+            {
+                State = new(KnownResourceStates.Running, KnownResourceStateStyles.Success),
+                ResourceType = "Group",
+                Properties = []
+            });
+        
         return authentik;
     }
 }

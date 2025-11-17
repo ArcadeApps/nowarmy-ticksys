@@ -13,11 +13,11 @@ var auth = builder.AddAuthentik("authentik", authDb);
 
 var api = builder.AddProject<Ticksys_Api>("api")
     .WithExternalHttpEndpoints()
-    .WithReference(auth)
+    .WithReference(auth.Resource.Server!.GetEndpoint("http"))
     .WaitFor(auth);
 
 var ui = builder.AddViteApp("ui", "../ticksys-ui", "pnpm")
-    .WithReference(auth)
+    .WithReference(auth.Resource.Server!.GetEndpoint("http"))
     .WithReference(api)
     .WaitFor(api);
 if (ui.Resource.TryGetAnnotationsOfType<EndpointAnnotation>(out var endpoints))
